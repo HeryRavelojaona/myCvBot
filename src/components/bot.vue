@@ -9,14 +9,19 @@
                 <h2>Des questions ?</h2>
             </div>
             <div class="modal-content">
-                <Questions :question="sendQuestion" />
+                <div id="questions">
+                    <p class="client" v-for="response, index in responses" :key="index"> {{ response }}</p>
+                </div>
             </div>
             <div class="modal-footer">
-                <label for="question"></label>
-                <input type="text" v-model="question" name="question">
-                <button @click="sendMessage">
-                    send
-                </button>
+                <div class="send">
+                    <label for="question"></label>
+                    <input type="text" v-model="question" name="question">
+                    <button @click="sendMessage">
+                        send
+                    </button>
+                </div>
+                <span class="error" v-if="error">{{ error }}</span>
             </div>
         </div>
 
@@ -24,21 +29,36 @@
 </template>
 
 <script>
-import Questions from './Questions'
 export default {
   name: 'Bot',
-  components :{
-      Questions
-  },
   data() {
       return {
           question: '',
-          sendQuestion: ''
+          responses: [],
+          error: null,
+          answers: {},
       }
+  },
+  mounted(){
+      this.answers = this.$store.state.answer;
   },
   methods: {
       sendMessage(){
-          this.sendQuestion = this.question;
+          if(this.question.length > 3){
+            this.responses.push(
+                {
+                    question : this.question,
+                    user : 'client'
+                }
+            );
+            this.responses.push(this.answers.filter(answer => 
+                answer.question.includes(this.question)
+            ))
+            this.error = null; 
+          }else {
+              this.error = 'Vous aviez une question ?'
+          }
+          
       }
   }
 }
@@ -86,8 +106,7 @@ export default {
 
     .modal-footer {
         display: flex;
-        align-items: center;
-        justify-content: center;
+        flex-direction: column;
         input {
             border: 1px solid;
             height: 30px;
@@ -96,8 +115,31 @@ export default {
         img {
             height: 30px;
         }
+        .error{
+            margin-top: 7px;
+            font-size: 0.9em;
+            color: red;
+        }
         
     }
+    #questions {
+    p {
+        width: 80%;
+        padding: 5px;
+        border-radius: 6px;
+        &.client {
+            float: right;
+            text-align: right;
+            background-color: red;
+        }
+        &.server {
+            text-align: left;
+            background-color: #fff;
+            color: #000;
+            float: left;
+        }
+    }
+}
 
 }
 </style> scoped>
