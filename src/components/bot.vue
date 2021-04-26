@@ -9,12 +9,12 @@
                 <h2>Des questions ?</h2>
             </div>
             <div class="modal-content">
-                <p>Some text in the Modal..</p>
+                <Question class="questionStyle" :question="ques" />
             </div>
             <div class="modal-footer">
                 <label for="question"></label>
-                <input type="text" name="question">
-                <button>
+                <input type="text" ref="question" name="question">
+                <button @click="send">
                     <img alt="send question" src="../assets/filled-sent.png">
                 </button>
             </div>
@@ -24,8 +24,24 @@
 </template>
 
 <script>
+
+import Question from './Question.vue'
+
 export default {
-  name: 'Bot'
+  name: 'Bot',
+  components : {
+    Question
+  },
+  data(){
+      return {
+          ques: ''
+      }
+  },
+  methods: {
+      send(){
+          this.ques = this.$refs.question.value
+      }
+  },
 }
 </script>
 
@@ -56,10 +72,14 @@ export default {
         }
     }
     .modal-content {
-        min-height: 60vh;
+        height: 60vh;
+        overflow-y: scroll;
         padding: 10px;
         background: #000;
         color: #fff;
+        &::-webkit-scrollbar {
+            width: 2px; /* width of the entire scrollbar */
+        }   
     }
     
     .modal-header, .modal-footer {
@@ -83,6 +103,7 @@ export default {
         }
         
     }
+ 
 
 }
 </style> scoped>
