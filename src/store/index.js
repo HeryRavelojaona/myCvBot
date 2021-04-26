@@ -5,11 +5,9 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
+    answer:[]
   },
   mutations: {
-  },
-  actions: {
-  },
-  modules: {
+    SET_ANSWER: (state, answers) => state.answers = answers,
   }
 })
