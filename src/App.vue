@@ -6,7 +6,7 @@
 
 <script>
 
-import Bot from './components/Bot'
+import Bot from './components/bot'
 export default {
   name: 'App',
   components: {
