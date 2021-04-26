@@ -7,7 +7,7 @@ export default new Vuex.Store({
   state: {
     answer:[
       { 
-        question : 'Qui es tu',
+        question : 'Qui es tu ?',
         response : "Je m'appelle Hery Ravelojaona",
         user : "server"
       },

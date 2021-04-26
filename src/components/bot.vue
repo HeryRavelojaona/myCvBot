@@ -10,16 +10,18 @@
             </div>
             <div class="modal-content">
                 <div id="questions">
-                    <p class="client" v-for="response, index in responses" :key="index"> {{ response }}</p>
+                    <p :class="response.user" v-for="response, index in responses" :key="index"> {{ response.question }}</p>
                 </div>
             </div>
             <div class="modal-footer">
                 <div class="send">
-                    <label for="question"></label>
-                    <input type="text" v-model="question" name="question">
-                    <button @click="sendMessage">
-                        send
-                    </button>
+                    <form action="" @submit.prevent="sendMessage">
+                        <label for="question"></label>
+                        <input type="text" v-model="question" name="question">
+                        <button type="submit">
+                            send
+                        </button>
+                    </form>
                 </div>
                 <span class="error" v-if="error">{{ error }}</span>
             </div>
@@ -37,13 +39,14 @@ export default {
           responses: [],
           error: null,
           answers: {},
+          showResponse: false
       }
   },
   mounted(){
       this.answers = this.$store.state.answer;
   },
   methods: {
-      sendMessage(){
+       sendMessage(){
           if(this.question.length > 3){
             this.responses.push(
                 {
@@ -51,9 +54,22 @@ export default {
                     user : 'client'
                 }
             );
-            this.responses.push(this.answers.filter(answer => 
+            setTimeout(()=>{
+                this.answers.forEach(element => {
+                    if(element.question.includes(this.question)){
+                        this.responses.push(
+                            {
+                                question : element.response,
+                                user : element.user
+                            }
+                        );
+                    }  
+                });
+            }, 1000)
+            
+            /*this.responses.push(this.answers.filter(answer => 
                 answer.question.includes(this.question)
-            ))
+            ))*/
             this.error = null; 
           }else {
               this.error = 'Vous aviez une question ?'
