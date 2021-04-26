@@ -9,13 +9,13 @@
                 <h2>Des questions ?</h2>
             </div>
             <div class="modal-content">
-                <p>Some text in the Modal..</p>
+                <Questions :question="sendQuestion" />
             </div>
             <div class="modal-footer">
                 <label for="question"></label>
-                <input type="text" name="question">
-                <button>
-                    <img alt="send question" src="../assets/filled-sent.png">
+                <input type="text" v-model="question" name="question">
+                <button @click="sendMessage">
+                    send
                 </button>
             </div>
         </div>
@@ -24,8 +24,23 @@
 </template>
 
 <script>
+import Questions from './Questions'
 export default {
-  name: 'Bot'
+  name: 'Bot',
+  components :{
+      Questions
+  },
+  data() {
+      return {
+          question: '',
+          sendQuestion: ''
+      }
+  },
+  methods: {
+      sendMessage(){
+          this.sendQuestion = this.question;
+      }
+  }
 }
 </script>
 
