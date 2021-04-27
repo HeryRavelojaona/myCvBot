@@ -12,6 +12,11 @@ export default new Vuex.Store({
         user : "server"
       },
       { 
+        question : "Quel es ton nom ?",
+        response : "Je m'appelle Hery Ravelojaona",
+        user : "server"
+      },
+      { 
         question : "Qui heure es t'il",
         response : "Je m'appelle Héry ",
         user : "server"

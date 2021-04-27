@@ -8,10 +8,11 @@
                 <button class="close">&times;</button>
                 <h2>Des questions ?</h2>
             </div>
-            <div class="modal-content">
+            <div class="modal-content" ref="chatBox">
                 <div id="questions">
-                    <p :class="response.user" v-for="response, index in responses" :key="index"> {{ response.question }}</p>
+                    <p :class="response.user" v-for="response, index in responses" :key="index"> {{ response.question }} </p>
                 </div>
+                
             </div>
             <div class="modal-footer">
                 <div class="send">
@@ -46,30 +47,36 @@ export default {
       this.answers = this.$store.state.answer;
   },
   methods: {
-       sendMessage(){
+        sendMessage(){
           if(this.question.length > 3){
+            //push the question
             this.responses.push(
                 {
                     question : this.question,
                     user : 'client'
                 }
             );
+            //Check if response and push the response
             setTimeout(()=>{
                 this.answers.forEach(element => {
-                    if(element.question.includes(this.question)){
+                    if(element.question.toLowerCase().includes(this.question.toLowerCase())){
                         this.responses.push(
                             {
                                 question : element.response,
                                 user : element.user
                             }
-                        );
-                    }  
+                        )
+                    }
                 });
-            }, 1000)
-            
-            /*this.responses.push(this.answers.filter(answer => 
-                answer.question.includes(this.question)
-            ))*/
+                
+                //Auto scroll chat Box
+                this.$nextTick(()=> {
+                    this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
+                })
+                //reset input
+                this.question = "";
+            }, 1000);
+        
             this.error = null; 
           }else {
               this.error = 'Vous aviez une question ?'
@@ -107,10 +114,11 @@ export default {
         }
     }
     .modal-content {
-        min-height: 60vh;
+        height: 60vh;
         padding: 10px;
         background: #000;
         color: #fff;
+        overflow-y: scroll;
     }
     
     .modal-header, .modal-footer {
