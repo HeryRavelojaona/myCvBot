@@ -10,14 +10,15 @@
             </div>
             <div class="modal-content" ref="chatBox">
                 <div id="questions">
+                    <p class="server" v-if="autoQuestion.nb">{{ autoQuestion.text }}</p>
                     <p :class="response.user" v-for="response, index in responses" :key="index"> {{ response.question }} </p>
                     <p class="server" v-if="errorAnswer">Désolé je n'ai pas la réponse, n'hésitez pas à me contacter
-                    <span class="contact">
-                        <a href="mailto:contact@heryravelojaona.fr"><img src="../assets/mail.svg.png" alt="email"> </a>
-                        <a href="tel:0609934256"><img src="../assets/images.png" alt="téléphone"></a>
-                    </span>
-                    
+                        <span class="contact">
+                            <a href="mailto:contact@heryravelojaona.fr"><img src="../assets/mail.svg.png" alt="email"> </a>
+                            <a href="tel:0609934256"><img src="../assets/images.png" alt="téléphone"></a>
+                        </span>
                     </p>
+                    
                 </div>
                 
             </div>
@@ -26,8 +27,10 @@
                     <form action="" @submit.prevent="sendMessage">
                         <label for="question"></label>
                         <input type="text" v-model="question" name="question">
+                        <input type="hidden" :value="autoQuestion.nb" ref="step" name="step">
                         <button type="submit">
-                            send
+
+                            <img src="../assets/send.svg" alt="envoyer le message">
                         </button>
                     </form>
                 </div>
@@ -49,7 +52,13 @@ export default {
           answers: {},
           showResponse: false,
           results: [],
-          errorAnswer: false
+          errorAnswer: false,
+          autoBot: [],
+          autoQuestion:{
+              text: '',
+              nb: null
+          },
+          step: null
       }
   },
   mounted(){
@@ -57,10 +66,16 @@ export default {
       this.answers = this.$store.state.answer;
       //get result response
       this.results = this.$store.state.results;
+      //get auto question
+      this.autoBot = this.$store.state.autoBot;
+     //first question
+      this.autoQuestion.text = this.autoBot[0];
+      this.autoQuestion.nb = 1;
   },
   methods: {
         sendMessage(){
-          if(this.question.length >= 7 ){
+            this.$store.commit('UPDATE_STEP');
+          /*if(this.question.length >= 2 ){
             //push the question
             this.responses.push(
                 {
@@ -68,20 +83,27 @@ export default {
                     user : 'client'
                 }
             );
+            //check if stepes Number
+            let steps = this.checkSteps(this.$refs.step.value);
+            if(steps){
+                console.log('ok')
+                return;
+            }
             //Check if response and push the response
             setTimeout(()=>{
+                // split quastion
+                let splitQuestion = this.question.toLowerCase().split(' ');
+                console.log(splitQuestion);
+                //Loop in server 
                 this.answers.forEach(element => {
-                    if(element.question.toLowerCase().includes(this.question.toLowerCase())){
-                        if(element.response){
+                    if(splitQuestion.includes(element.question.toLowerCase())){
                             this.responses.push(
                                 {
                                     question : this.results[element.response],
                                     user : element.user
                                 }
                             )
-                            this.errorAnswer = false;
-                        }
-                        
+                        this.errorAnswer = false;
                     }else if(!element.response) {
                             this.errorAnswer = true;
                         }
@@ -93,13 +115,45 @@ export default {
                 })
                 //reset input
                 this.question = "";
+    
             }, 1000);
-        
+
             this.error = null; 
           }else {
               this.error = "Vous aviez une question ?"
-          }
+          }*/
           
+      },
+      checkSteps(step){
+          if(step && step == 1){
+            setTimeout(()=>{
+                // split quastion
+                let splitQuestion = this.question.toLowerCase().split(' ');
+                console.log(splitQuestion);
+                //Loop in server 
+                this.autoBot.forEach(element => {
+                    if(splitQuestion.includes(element.question.toLowerCase())){
+                            this.responses.push(
+                                {
+                                    question : this.autoResults[element.response],
+                                    user : element.user
+                                }
+                            )
+                        this.errorAnswer = false;
+                    }else if(!element.response) {
+                            this.errorAnswer = true;
+                        }
+                });
+                
+                //Auto scroll chat Box
+                this.$nextTick(()=> {
+                    this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
+                })
+                //reset input
+                this.question = "";
+    
+            }, 1000);
+          }
       }
   }
 }
@@ -158,7 +212,7 @@ export default {
             width: 80%;
         }
         img {
-            height: 30px;
+            width: 30px;
         }
         .error{
             margin-top: 7px;
