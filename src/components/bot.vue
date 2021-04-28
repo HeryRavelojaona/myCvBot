@@ -10,15 +10,26 @@
             </div>
             <div class="modal-content" ref="chatBox">
                 <div id="questions">
-                    <p class="server" v-if="autoQuestion.nb">{{ autoQuestion.text }}</p>
-                    <p :class="response.user" v-for="response, index in responses" :key="index"> {{ response.question }} </p>
-                    <p class="server" v-if="errorAnswer">Désolé je n'ai pas la réponse, n'hésitez pas à me contacter
+                    <p :class="response.user" 
+                        v-for="response, index in responses" 
+                        :key="index"> 
+                        {{ response.question }}
+                        <span class="btn-choice" v-if="response.choices">
+                            <div class="button choice" v-for="choice in choices" :key="choice.id">
+                                 <button v-if="choice.type == 'question'"  @click.prevent="handleQuestion(choice.id)" >{{ choice.text }}</button>
+                            </div>
+                           
+                        </span>
+                        
+                    </p>
+                    <p class="server" 
+                        v-if="errorAnswer">
+                            Désolé je n'ai pas la réponse, n'hésitez pas à me contacter
                         <span class="contact">
                             <a href="mailto:contact@heryravelojaona.fr"><img src="../assets/mail.svg.png" alt="email"> </a>
                             <a href="tel:0609934256"><img src="../assets/images.png" alt="téléphone"></a>
                         </span>
                     </p>
-                    
                 </div>
                 
             </div>
@@ -27,9 +38,8 @@
                     <form action="" @submit.prevent="sendMessage">
                         <label for="question"></label>
                         <input type="text" v-model="question" name="question">
-                        <input type="hidden" :value="autoQuestion.nb" ref="step" name="step">
+                        <input type="hidden" ref="step" name="step">
                         <button type="submit">
-
                             <img src="../assets/send.svg" alt="envoyer le message">
                         </button>
                     </form>
@@ -48,113 +58,95 @@ export default {
       return {
           question: '',
           responses: [],
+          choices: [],
           error: null,
           answers: {},
           showResponse: false,
-          results: [],
           errorAnswer: false,
           autoBot: [],
-          autoQuestion:{
-              text: '',
-              nb: null
-          },
-          step: null
+          step: null,
+          questions:[],
+          yes: false
+      }
+  },
+  computed:{
+      checkStep(){
+          if(this.step == 1){
+              this.yes = true;
+          }
       }
   },
   mounted(){
-      // get array question
-      this.answers = this.$store.state.answer;
-      //get result response
-      this.results = this.$store.state.results;
-      //get auto question
-      this.autoBot = this.$store.state.autoBot;
-     //first question
-      this.autoQuestion.text = this.autoBot[0];
-      this.autoQuestion.nb = 1;
+    // get array question
+    this.answers = this.$store.state.answers;
+    //get auto question
+    this.autoBot = this.$store.state.autoBot;
+    //get auto answer
+    this.questions = this.$store.state.questions;
+    //Mulptiple choice button
+    this.choices = this.$store.state.choices;
+    //first question
+    this.step = this.$store.state.step;
+    //fisrt question
+    this.responses.push( {  question : this.autoBot[this.step].text,
+                            choices : this.autoBot[this.step].choices,
+                            user : 'server'})
   },
   methods: {
         sendMessage(){
-            this.$store.commit('UPDATE_STEP');
-          /*if(this.question.length >= 2 ){
-            //push the question
-            this.responses.push(
-                {
-                    question : this.question,
-                    user : 'client'
-                }
-            );
-            //check if stepes Number
-            let steps = this.checkSteps(this.$refs.step.value);
-            if(steps){
-                console.log('ok')
-                return;
-            }
-            //Check if response and push the response
-            setTimeout(()=>{
-                // split quastion
+            
+            if(this.question.length >= 2 ){
+                //push the question
+                this.responses.push(
+                    {
+                        question : this.question,
+                        user : 'client'
+                    }
+                );
+                // split question
                 let splitQuestion = this.question.toLowerCase().split(' ');
-                console.log(splitQuestion);
-                //Loop in server 
-                this.answers.forEach(element => {
-                    if(splitQuestion.includes(element.question.toLowerCase())){
-                            this.responses.push(
-                                {
-                                    question : this.results[element.response],
-                                    user : element.user
-                                }
-                            )
-                        this.errorAnswer = false;
-                    }else if(!element.response) {
-                            this.errorAnswer = true;
-                        }
-                });
-                
-                //Auto scroll chat Box
-                this.$nextTick(()=> {
-                    this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
-                })
-                //reset input
-                this.question = "";
-    
-            }, 1000);
+                console.log(splitQuestion)
+                setTimeout(()=>{
+                    this.questions.forEach(element => {
+                        if(splitQuestion.includes(element.question.toLowerCase())){
+                            console.log(element.question)
+                                this.responses.push(
+                                    {
+                                        question : this.answers[element.response],
+                                        user : element.user
+                                    }
+                                )
+                            this.errorAnswer = false;
+                        }else if(!element.text) {
+                                this.errorAnswer = false;
+                         }
+                    });
 
-            this.error = null; 
-          }else {
-              this.error = "Vous aviez une question ?"
-          }*/
-          
-      },
-      checkSteps(step){
-          if(step && step == 1){
-            setTimeout(()=>{
-                // split quastion
-                let splitQuestion = this.question.toLowerCase().split(' ');
-                console.log(splitQuestion);
-                //Loop in server 
-                this.autoBot.forEach(element => {
-                    if(splitQuestion.includes(element.question.toLowerCase())){
-                            this.responses.push(
-                                {
-                                    question : this.autoResults[element.response],
-                                    user : element.user
-                                }
-                            )
-                        this.errorAnswer = false;
-                    }else if(!element.response) {
-                            this.errorAnswer = true;
-                        }
-                });
+                    //Update step
+                    this.$store.commit('UPDATE_STEP');
+                    this.step = this.$store.state.step;
+                    setTimeout(()=> {
+                        this.responses.push(
+                            {
+                                question : this.autoBot[this.step].text,
+                                choices : this.autoBot[this.step].choices,
+                                user : 'server'
+                            }
+                        )
+                    }, 1500);
+                    //autosroll
+                    this.$nextTick(()=> {
+                        this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
+                    })
+                }, 1000);
                 
-                //Auto scroll chat Box
-                this.$nextTick(()=> {
-                    this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
-                })
-                //reset input
-                this.question = "";
-    
-            }, 1000);
-          }
+            }
+      },
+      //Question select with button choices
+      handleQuestion(id){
+          console.log(id);
       }
+     
   }
 }
 </script>
@@ -251,6 +243,22 @@ export default {
         }
         img {
         width: 30px;
+        }
+    }
+    .btn-choice {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        .choice {
+            background: red;
+            margin: 5px;
+            
+            border-radius: 3px;
+        }
+        button {
+            padding: 10px;
+            width: 100%;
+            height: 100%;
         }
     }
 

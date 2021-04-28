@@ -6,208 +6,6 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     step: 0,
-    answer:[
-      { 
-        question : 'Qui es tu ?',
-        response : 0,
-        user : "server"
-      },
-      { 
-        question : "nom",
-        response : 0,
-        user : "server"
-      },
-      { 
-        question : "t'appelles-tu ?",
-        response : 0,
-        user : "server"
-      },
-      { 
-        question : "t'appelles",
-        response : 0,
-        user : "server"
-      },
-      { 
-        question : "t'appel",
-        response : 0,
-        user : "server"
-      },
-      { 
-        question : "appelles",
-        response : 0,
-        user : "server"
-      },
-      //Age
-      { 
-        question : "âge",
-        response : 1,
-        user : "server"
-      },
-      { 
-        question : "age",
-        response : 1,
-        user : "server"
-      },
-
-      //Diplome
-      { 
-        question : "diplôme",
-        response : 2,
-        user : "server"
-      },
-      { 
-        question : "diplome",
-        response : 2,
-        user : "server"
-      },
-      { 
-        question : "diplomes",
-        response : 2,
-        user : "server"
-      },
-      { 
-        question : "diplômes",
-        response : 2,
-        user : "server"
-      },
-      //spécialité
-      { 
-        question : "spécialité",
-        response : 3,
-        user : "server"
-      },
-      { 
-        question : "Front-end",
-        response : 3,
-        user : "server"
-      },
-      { 
-        question : "Front",
-        response : 3,
-        user : "server"
-      },
-      //langage
-      { 
-        question : "langage",
-        response : 4,
-        user : "server"
-      },
-      { 
-        question : "languages",
-        response : 4,
-        user : "server"
-      },
-      { 
-        question : "language",
-        response : 4,
-        user : "server"
-      },
-      { 
-        question : "langages",
-        response : 4,
-        user : "server"
-      },
-      { 
-        question : "Framework",
-        response : 4,
-        user : "server"
-      },
-      //Ton email
-      { 
-        question : "mail",
-        response : 5,
-        user : "server"
-      },
-      { 
-        question : "email",
-        response : 5,
-        user : "server"
-      },
-      { 
-        question : "contactez",
-        response : 5,
-        user : "server"
-      },
-      { 
-        question : "contact",
-        response : 5,
-        user : "server"
-      },
-      { 
-        question : "numéro",
-        response : 5,
-        user : "server"
-      },
-      { 
-        question : "numero",
-        response : 5,
-        user : "server"
-      },
-      { 
-        question : "téléphone",
-        response : 5,
-        user : "server"
-      },
-      //exp
-      { 
-        question : "expérience",
-        response : 6,
-        user : "server"
-      },
-      { 
-        question : "expériences",
-        response : 6,
-        user : "server"
-      },
-      { 
-        question : "experience",
-        response : 6,
-        user : "server"
-      },
-      //adresse
-      { 
-        question : "habites",
-        response : 7,
-        user : "server"
-      },
-      { 
-        question : "habites-tu",
-        response : 7,
-        user : "server"
-      },
-      { 
-        question : "habite",
-        response : 7,
-        user : "server"
-      },
-      { 
-        question : "adresse",
-        response : 7,
-        user : "server"
-      },
-      //loisirs
-      { 
-        question : "loisirs",
-        response : 8,
-        user : "server"
-      },
-      { 
-        question : "hobbys",
-        response : 8,
-        user : "server"
-      },
-      { 
-        question : "hobby",
-        response : 8,
-        user : "server"
-      },
-      //Pourquoi
-      { 
-        question : "pourquoi",
-        response : 8,
-        user : "server"
-      }
-    ],
     results: [
       "Je m'appelle Hery Ravelojaona",
       "J'ai 36 ans",
@@ -221,7 +19,61 @@ export default new Vuex.Store({
 
     ],
     autoBot: [
-      "Bonjour, comment allez vous ?"
+      {
+        text: "Bonjour, comment allez vous ?",
+        choices: false
+      },
+      {
+        text: "Que souhaitez savoir sur moi ?",
+        choices: true
+      }
+    ],
+    questions: [
+      //How are you good
+
+      {
+        question : 'ça va bien',
+        response : 0,
+        user : "server"
+      },
+      {
+        question : 'ça va',
+        response : 0,
+        user : "server"
+      },
+ 
+      {
+        question : 'bien',
+        response : 0,
+        user : "server"
+      },
+      //How are you bad
+      {
+        question : 'mal',
+        response : 1,
+        user : "server"
+      },
+      {
+        question : 'pas',
+        response : 1,
+        user : "server"
+      }
+    ],
+    answers: [
+      "J'en suis très content, moi aussi je vais bien",
+      "Ca ira mieux demain"
+    ],
+    choices: [
+        {
+          text: "Qui suis-je ?",
+          id: 1,
+          type: "question"
+        },
+        {
+          text: "Ma formation ?",
+          id: 2,
+          type: "question"
+        },
     ]
   },
   mutations: {
