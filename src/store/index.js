@@ -34,8 +34,7 @@ export default new Vuex.Store({
     choiceResponses : [
       {
         text: "Hery Ravelojaona ( oui je sais, son nom est compliqué à prononcé mais vous allez vous y habitué) 36 ans, il habites en région parisienne dans le département de la Seine et Marne.",
-        validation: false,
-        audio: true
+        validation: false
       }
       
     ]

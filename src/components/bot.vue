@@ -13,13 +13,7 @@
                     <p :class="response.user" 
                         v-for="response, index in responses" 
                         :key="index"> 
-                        <span class="btn-choice" v-if="response.audio">
-                            <span class="bonus">Je peux vous prononcer son nom</span>
-                            <audio controls>cdcdc
-                                <source src="../assets/nom.mp3" type="audio/mpeg">
-                                Your browser does not support the audio element.
-                            </audio>
-                        </span>
+
                         {{ response.question }}
                         
                         <span class="btn-choice" v-if="response.choices">
@@ -197,7 +191,6 @@ export default {
                             {
                                 question : this.choiceResponses[id].text,
                                 validation: this.choiceResponses[id].validation,
-                                audio: this.choiceResponses[id].audio,
                                 user : 'server'
                             }
                         );
@@ -331,17 +324,7 @@ export default {
             &:first-child{
                 background: grey;
             }
-        }
-        audio {
-            width: 80%;
-            height: 20px;
-            margin: 10px auto;
-        }
-        .bonus{
-            font-size: 0.8em;
-            font-style: italic;
-            text-align: center;
-        }
+        }  
     }
   
 
