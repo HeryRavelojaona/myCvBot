@@ -30,7 +30,7 @@
                     </p>
                     <p class="server" 
                         v-if="errorAnswer">
-                            Désolé je n'ai pas la réponse, n'hésitez pas à me contacter
+                            Désolé <span v-if="userName">{{ userName }}</span> je n'ai pas la réponse, n'hésitez pas à me contacter
                         <span class="contact">
                             <a href="mailto:contact@heryravelojaona.fr"><img src="../assets/mail.svg.png" alt="email"> </a>
                             <a href="tel:0609934256"><img src="../assets/images.png" alt="téléphone"></a>
@@ -72,7 +72,8 @@ export default {
           userInput: false,
           textHolder: '',
           error: null,
-          choiceResponses: null
+          choiceResponses: null,
+          userName: null
       }
   },
   computed:{
@@ -80,11 +81,14 @@ export default {
           if(this.step == 1){
               this.action = true;
           }
+          this.step = this.$store.state.step;
       }
   },
   mounted(){
     //get auto question
     this.autoBot = this.$store.state.autoBot;
+    //get questions
+    this.questions = this.$store.state.questions;
     //Mulptiple choice button
     this.choices = this.$store.state.choices;
     //first question
@@ -132,29 +136,38 @@ export default {
                     );
                     // split question
                     let splitQuestion = this.question.toLowerCase().split(' ');
-                    setTimeout(()=>{
+                    
                         this.questions.forEach(element => {
                             if(splitQuestion.includes(element.question.toLowerCase())){
+                        setTimeout(()=>{
+                            this.errorAnswer = false;
                                     this.responses.push(
                                         {
-                                            question : this.answers[element.response],
+                                            question : element.response,
                                             user : element.user,
                                         }
                                     )
-                                this.errorAnswer = false;
-
+                                
+                                this.question = "";
+                                this.autoScroll();
+                        
+                        }, 800);
                             }else {
-                                    this.errorAnswer = true;
-                                    
-                            }
+                    
+                                this.errorAnswer = true;
+                                this.autoScroll();       
+                            }    
+                   
                         });
-                
-                    }, 1000);
+                    
                 }
                
                 //Update step
-                this.$store.commit('UPDATE_STEP');
-                this.step = this.$store.state.step;
+                if(this.step < 1){
+                    this.$store.commit('AUTO_UPDATE_STEP');
+                    this.step = this.$store.state.step;
+                }
+                
                 setTimeout(()=> {
                     this.responses.push(
                         {
@@ -166,27 +179,40 @@ export default {
                     )
                 }, 1500);
                 //autosroll
-                this.$nextTick(()=> {
-                    this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
-                }) 
+                this.autoScroll();
             }
       },
-      //Question selected with button validation
-      //If true open User Input
-      handleValidation(boolean){
-          if(boolean){
-              this.userInput = true;
-              if(this.step == 0){
-                  this.textHolder = "Veuillez entrer votre prénom ici"
-              }
-          }else {
-              this.userInput = false;
-              this.question = "Ca ne fait rien";
-              this.sendMessage();
-          }
-      },
-      handleChoice(id){
-          setTimeout(()=> {
+      //autoScroll
+    autoScroll(){
+        this.$nextTick(()=> {
+                this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
+            }) ;
+    },
+            
+    //Question selected with button validation
+    //If true open User Input
+    handleValidation(boolean){
+        if(boolean){
+            this.userInput = true;
+            if(this.step == 0){
+                this.textHolder = "Veuillez entrer votre prénom ici"
+            }
+        }else {
+            this.userInput = false;
+            this.question = "Ca ne fait rien";
+            //autosroll
+            this.autoScroll();
+            this.sendMessage();
+            this.question = "";
+        }
+    },
+    handleChoice(id){
+        if(id == 7) {
+            this.handleValidation(true);
+            return;
+        }
+        let timer = 5000;
+        setTimeout(()=> {
             this.responses.push(
                             {
                                 question : this.choiceResponses[id].text,
@@ -195,13 +221,62 @@ export default {
                             }
                         );
             //autosroll
-            this.$nextTick(()=> {
-                this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
-            }) 
+            this.autoScroll();
+        }, 1000);
 
-          }, 1000)
+        //If id === 1 Multiple response
+        if(id == 1) {
+            timer = 10000;
+            setTimeout(()=> {
+                this.responses.push(
+                            {
+                                question : this.choiceResponses[id + 1].text,
+                                validation: this.choiceResponses[id + 1].validation,
+                                user : 'server'
+                            }
+                        );
+                //autosroll
+                this.autoScroll();
+            }, 3500)
+            setTimeout(()=> {
+                this.responses.push(
+                            {
+                                question : this.choiceResponses[id + 2].text,
+                                validation: this.choiceResponses[id + 2].validation,
+                                user : 'server'
+                            }
+                        );
+                //autosroll
+                this.autoScroll();
+            }, 5500)
+            setTimeout(()=> {
+                this.responses.push(
+                            {
+                                question : this.choiceResponses[id + 3].text,
+                                validation: this.choiceResponses[id + 3].validation,
+                                user : 'server'
+                            }
+                        );
+                //autosroll
+                this.autoScroll();
+            }, 7500)
+        }
         
-      }
+        //Show choices again
+        setTimeout(()=> {
+            this.responses.push(
+                    {
+                        question : this.autoBot[1].text,
+                        choices : this.autoBot[1].choices,
+                        user : 'server',
+                        validation : this.autoBot[1].validation 
+                    }
+                )
+                //autosroll
+            this.autoScroll();
+        }, timer);
+        
+    }
      
   }
 }
@@ -275,6 +350,7 @@ export default {
             padding: 8px;
             border-radius: 6px;
             text-align: justify;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
             &.client {
                 float: right;
                 background-color: red;
@@ -285,7 +361,8 @@ export default {
                 float: left;
             }
             &:last-child {
-                padding: 10px ;
+                padding: 10px;
+                line-height: 1.4em;
             }
         }
     }
