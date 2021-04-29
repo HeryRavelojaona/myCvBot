@@ -13,14 +13,26 @@
                     <p :class="response.user" 
                         v-for="response, index in responses" 
                         :key="index"> 
+                        <span class="btn-choice" v-if="response.audio">
+                            <span class="bonus">Je peux vous prononcer son nom</span>
+                            <audio controls>cdcdc
+                                <source src="../assets/nom.mp3" type="audio/mpeg">
+                                Your browser does not support the audio element.
+                            </audio>
+                        </span>
                         {{ response.question }}
+                        
                         <span class="btn-choice" v-if="response.choices">
                             <div class="button choice" v-for="choice in choices" :key="choice.id">
-                                 <button v-if="choice.type == 'question'"  @click.prevent="handleQuestion(choice.id)" >{{ choice.text }}</button>
+                                 <button v-if="choice.type == 'question'"  @click.prevent="handleChoice(choice.id)" >{{ choice.text }}</button>
                             </div>
-                           
                         </span>
-                        
+                        <span class="btn-choice" v-else-if="response.validation">
+                            <div>
+                                 <button class="validation" @click="handleValidation(true)">Oui</button>
+                                 <button class="validation" @click="handleValidation(false)">Non</button>
+                            </div>
+                        </span>
                     </p>
                     <p class="server" 
                         v-if="errorAnswer">
@@ -29,16 +41,15 @@
                             <a href="mailto:contact@heryravelojaona.fr"><img src="../assets/mail.svg.png" alt="email"> </a>
                             <a href="tel:0609934256"><img src="../assets/images.png" alt="téléphone"></a>
                         </span>
-                    </p>
+                    </p> 
                 </div>
                 
             </div>
             <div class="modal-footer">
-                <div class="send">
+                <div class="send" v-if="userInput">
                     <form action="" @submit.prevent="sendMessage">
                         <label for="question"></label>
-                        <input type="text" v-model="question" name="question">
-                        <input type="hidden" ref="step" name="step">
+                        <input type="text" v-model="question" name="question" :placeholder="textHolder">
                         <button type="submit">
                             <img src="../assets/send.svg" alt="envoyer le message">
                         </button>
@@ -59,92 +70,144 @@ export default {
           question: '',
           responses: [],
           choices: [],
-          error: null,
-          answers: {},
-          showResponse: false,
           errorAnswer: false,
           autoBot: [],
           step: null,
           questions:[],
-          yes: false
+          action: null,
+          userInput: false,
+          textHolder: '',
+          error: null,
+          choiceResponses: null
       }
   },
   computed:{
       checkStep(){
           if(this.step == 1){
-              this.yes = true;
+              this.action = true;
           }
       }
   },
   mounted(){
-    // get array question
-    this.answers = this.$store.state.answers;
     //get auto question
     this.autoBot = this.$store.state.autoBot;
-    //get auto answer
-    this.questions = this.$store.state.questions;
     //Mulptiple choice button
     this.choices = this.$store.state.choices;
     //first question
     this.step = this.$store.state.step;
+    //Choice Response
+    this.choiceResponses = this.$store.state.choiceResponses;
     //fisrt question
     this.responses.push( {  question : this.autoBot[this.step].text,
                             choices : this.autoBot[this.step].choices,
+                            validation : this.autoBot[this.step].validation,
                             user : 'server'})
   },
   methods: {
         sendMessage(){
-            
-            if(this.question.length >= 2 ){
-                //push the question
-                this.responses.push(
-                    {
-                        question : this.question,
-                        user : 'client'
-                    }
-                );
-                // split question
-                let splitQuestion = this.question.toLowerCase().split(' ');
-                console.log(splitQuestion)
-                setTimeout(()=>{
-                    this.questions.forEach(element => {
-                        if(splitQuestion.includes(element.question.toLowerCase())){
-                            console.log(element.question)
-                                this.responses.push(
-                                    {
-                                        question : this.answers[element.response],
-                                        user : element.user
-                                    }
-                                )
-                            this.errorAnswer = false;
-                        }else if(!element.text) {
-                                this.errorAnswer = false;
-                         }
-                    });
 
-                    //Update step
-                    this.$store.commit('UPDATE_STEP');
-                    this.step = this.$store.state.step;
-                    setTimeout(()=> {
+            if(this.question.length >= 2 ){
+                //initial step
+                if(this.step == 0) {
+                    if(this.userInput){
+                        this.$store.commit('SET_USERNAME', this.question);
                         this.responses.push(
                             {
-                                question : this.autoBot[this.step].text,
-                                choices : this.autoBot[this.step].choices,
+                                question : "Enchanté de vous connaitre "+this.$store.state.userName+" ",
                                 user : 'server'
                             }
-                        )
-                    }, 1500);
-                    //autosroll
-                    this.$nextTick(()=> {
-                        this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
-                    })
-                }, 1000);
+                        );
+                        this.question = "";
+                        this.userInput = false;
+                    }else {
+                        this.responses.push(
+                            {
+                                question : "Ca ne fait rien",
+                                user : 'server'
+                            }
+                        );
+                    }
+                }
+                //push the question
+                else {
+                    this.responses.push(
+                        {
+                            question : this.question,
+                            user : 'client'
+                        }
+                    );
+                    // split question
+                    let splitQuestion = this.question.toLowerCase().split(' ');
+                    setTimeout(()=>{
+                        this.questions.forEach(element => {
+                            if(splitQuestion.includes(element.question.toLowerCase())){
+                                    this.responses.push(
+                                        {
+                                            question : this.answers[element.response],
+                                            user : element.user,
+                                        }
+                                    )
+                                this.errorAnswer = false;
+
+                            }else {
+                                    this.errorAnswer = true;
+                                    
+                            }
+                        });
                 
+                    }, 1000);
+                }
+               
+                //Update step
+                this.$store.commit('UPDATE_STEP');
+                this.step = this.$store.state.step;
+                setTimeout(()=> {
+                    this.responses.push(
+                        {
+                            question : this.autoBot[this.step].text,
+                            choices : this.autoBot[this.step].choices,
+                            user : 'server',
+                            validation : this.autoBot[this.step].validation 
+                        }
+                    )
+                }, 1500);
+                //autosroll
+                this.$nextTick(()=> {
+                    this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
+                }) 
             }
       },
-      //Question select with button choices
-      handleQuestion(id){
-          console.log(id);
+      //Question selected with button validation
+      //If true open User Input
+      handleValidation(boolean){
+          if(boolean){
+              this.userInput = true;
+              if(this.step == 0){
+                  this.textHolder = "Veuillez entrer votre prénom ici"
+              }
+          }else {
+              this.userInput = false;
+              this.question = "Ca ne fait rien";
+              this.sendMessage();
+          }
+      },
+      handleChoice(id){
+          setTimeout(()=> {
+            this.responses.push(
+                            {
+                                question : this.choiceResponses[id].text,
+                                validation: this.choiceResponses[id].validation,
+                                audio: this.choiceResponses[id].audio,
+                                user : 'server'
+                            }
+                        );
+            //autosroll
+            this.$nextTick(()=> {
+                this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
+            }) 
+
+          }, 1000)
+        
       }
      
   }
@@ -216,21 +279,20 @@ export default {
     #questions {
         p {
             width: 80%;
-            padding: 5px;
+            padding: 8px;
             border-radius: 6px;
+            text-align: justify;
             &.client {
                 float: right;
-                text-align: right;
                 background-color: red;
             }
             &.server {
-                text-align: left;
                 background-color: #fff;
                 color: #000;
                 float: left;
             }
             &:last-child {
-                padding: 10px 5px;
+                padding: 10px ;
             }
         }
     }
@@ -258,9 +320,30 @@ export default {
         button {
             padding: 10px;
             width: 100%;
+
             height: 100%;
+            
+        }
+        .validation {
+            background: red;
+            margin: 5px 0;
+            border-radius: 3px;
+            &:first-child{
+                background: grey;
+            }
+        }
+        audio {
+            width: 80%;
+            height: 20px;
+            margin: 10px auto;
+        }
+        .bonus{
+            font-size: 0.8em;
+            font-style: italic;
+            text-align: center;
         }
     }
+  
 
 }
 </style> scoped>

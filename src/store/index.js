@@ -6,78 +6,42 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     step: 0,
-    results: [
-      "Je m'appelle Hery Ravelojaona",
-      "J'ai 36 ans",
-      "Titre RNCP niveau 5 de développeur web depuis 2020",
-      "Je suis plus orienté Front-end, mais je suis ouvert à tout",
-      "VueJs / ReactJs / Javascript / PHP / Symfony / Twig / Sql / Html / Css / SASS / Bulma / Bootsrap / Wordpress",
-      "hery@heryravelojaona.fr ou 06 09 93 42 56",
-      "DÉVELOPPEUR - FREELANCE TÉLÉTRAVAIL  Décembre 2020  Aujourd’hui",
-      "A Vaires sur marne en Seine et marne (77)",
-      "Le développement web, l'ébénisterie et plein d'autre chose. Contactez-moi que l'on en discute"
-
-    ],
+    userName: null,
     autoBot: [
       {
-        text: "Bonjour, comment allez vous ?",
+        text: "Bonjour, je suis IRI l'assistant d'Hery. J'espère que vous allez bien. Puis-je connaitre votre prénom ?",
+        validation: true,
         choices: false
       },
       {
-        text: "Que souhaitez savoir sur moi ?",
-        choices: true
+        text: "Que souhaitez savoir sur lui ?",
+        choices: true,
+        validation: false
       }
-    ],
-    questions: [
-      //How are you good
-
-      {
-        question : 'ça va bien',
-        response : 0,
-        user : "server"
-      },
-      {
-        question : 'ça va',
-        response : 0,
-        user : "server"
-      },
- 
-      {
-        question : 'bien',
-        response : 0,
-        user : "server"
-      },
-      //How are you bad
-      {
-        question : 'mal',
-        response : 1,
-        user : "server"
-      },
-      {
-        question : 'pas',
-        response : 1,
-        user : "server"
-      }
-    ],
-    answers: [
-      "J'en suis très content, moi aussi je vais bien",
-      "Ca ira mieux demain"
     ],
     choices: [
         {
-          text: "Qui suis-je ?",
-          id: 1,
+          text: "Qui est-il ?",
+          id: 0,
           type: "question"
         },
         {
-          text: "Ma formation ?",
-          id: 2,
+          text: "Sa formation ?",
+          id: 1,
           type: "question"
         },
+    ],
+    choiceResponses : [
+      {
+        text: "Hery Ravelojaona ( oui je sais, son nom est compliqué à prononcé mais vous allez vous y habitué) 36 ans, il habites en région parisienne dans le département de la Seine et Marne.",
+        validation: false,
+        audio: true
+      }
+      
     ]
   },
   mutations: {
-    SET_ANSWER: (state, answers) => state.answers = answers,
+    SET_USERNAME: (state, userName) => state.userName = userName,
     UPDATE_STEP: (state) => state.step ++,
   }
 })
