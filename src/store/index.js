@@ -39,6 +39,16 @@ export default new Vuex.Store({
         user: "server"
       },
       {
+        question: "origine",
+        response: "Hery est d'origine malgache (Madagascar)",
+        user: "server"
+      },
+      {
+        question: "origines",
+        response: "Hery est d'origine malgache (Madagascar)",
+        user: "server"
+      },
+      {
         question: "nom",
         response: "Il s'appel Hery Ravelojaona, moi je m'appelle IRI",
         user: "server"

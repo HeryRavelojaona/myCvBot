@@ -109,7 +109,6 @@ export default {
   methods: {
     sendMessage(){
         this.isLoaded = true;
-     
             //initial step
             if(this.step == 0) {
                 if(this.userInput){
@@ -147,6 +146,7 @@ export default {
                     // split question
                     let splitQuestion = this.question.toLowerCase().split(' ');
                     const questions = this.questions;
+                    this.isLoaded = true;
                     setTimeout(()=> {
                         for( const element of questions){
                             if(splitQuestion.includes(element.question.toLowerCase())){
@@ -159,6 +159,7 @@ export default {
                                     )
                                 
                                 this.question = "";
+                                this.isLoaded = false;
                                 this.autoScroll();
                                 break;  
                                 
@@ -173,6 +174,7 @@ export default {
                 }
 
             }
+
             this.isLoaded = false;
             this.autoScroll();  
             //Update step
@@ -182,6 +184,7 @@ export default {
             }
             
             if(this.step == 1) {
+                this.isLoaded = true;
                 setTimeout(()=> {
                     this.responses.push(
                         {
@@ -191,8 +194,9 @@ export default {
                             validation : this.autoBot[this.step].validation 
                         }
                     )
-                     this.autoScroll(); 
-                }, 2000);
+                     this.autoScroll();
+                     this.isLoaded = false; 
+                }, 4000);
             }
     
             //autosroll
@@ -224,7 +228,6 @@ export default {
         }else {
             if(this.step == 1){
                 if(boolean){
-                    this.userInput = false;
                     //autosroll 
                     this.sendMessage();
                     this.autoScroll();
@@ -232,7 +235,7 @@ export default {
                 }else {
                     this.responses.push(
                             {
-                                question : "N'hésitez pas à le contacter bonne journée",
+                                question : "N'hésitez pas à le contacter où à le recruter. Bonne journée",
                                 choices : false,
                                 user : 'server',
                                 validation : false 
@@ -249,7 +252,7 @@ export default {
     handleChoice(id){
         //Questions
         if(id == 7) {
-            this.handleValidation(true);
+            this.userInput = true;
             return;
         }
         //Meteo call
@@ -355,7 +358,7 @@ export default {
             const temperature = meteo.main.temp;
             const description = meteo.weather[0].description;
         
-            let response = "Il fait actuellement "+ Math.round(temperature)+"° à " + name + " avec " + description 
+            let response = "Il fait actuellement "+ Math.round(temperature)+"° à " + name + ", " + description 
             this.responses.push(
                             {
                                 question : response ,
