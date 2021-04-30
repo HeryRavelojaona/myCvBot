@@ -1,7 +1,7 @@
 <template>
     <div id="bot">
         <!-- Trigger/Open The Modal -->
-        <button id="myBtn">Une question ?</button>
+        <button id="myBtn"></button>
         <!-- The Modal -->
         <div id="myModal" class="modal">
             <div class="modal-header">
@@ -13,9 +13,9 @@
                     <p :class="response.user" 
                         v-for="response, index in responses" 
                         :key="index"> 
-
+                        <span class="btn-choice" v-if="response.choices && userName">Alors {{ userName }} allons-y.</span>
                         {{ response.question }}
-                        
+                    
                         <span class="btn-choice" v-if="response.choices">
                             <div class="button choice" v-for="choice in choices" :key="choice.id">
                                  <button v-if="choice.type == 'question'"  @click.prevent="handleChoice(choice.id)" >{{ choice.text }}</button>
@@ -31,7 +31,7 @@
                     <p class="server" 
                         v-if="errorAnswer">
 
-                            Désolé <span v-if="userName">{{ userName }}</span> je n'ai pas la réponse, n'hésitez pas à me contacter
+                            Désolé <span v-if="userName">{{ userName }}</span> je n'ai pas la réponse, n'hésitez pas à le contacter
                         <span class="contact">
                             <a href="mailto:contact@heryravelojaona.fr"><img src="../assets/mail.svg.png" alt="email"> </a>
                             <a href="tel:0609934256"><img src="../assets/images.png" alt="téléphone"></a>
@@ -103,93 +103,94 @@ export default {
                             user : 'server'})
   },
   methods: {
-        sendMessage(){
-
-            if(this.question.length >= 2 ){
-                //initial step
-                if(this.step == 0) {
-                    if(this.userInput){
-                        this.$store.commit('SET_USERNAME', this.question);
-                        this.responses.push(
-                            {
-                                question : "Enchanté de vous connaitre "+this.$store.state.userName+" ",
-                                user : 'server'
-                            }
-                        );
-                        this.question = "";
-                        this.userInput = false;
-                    }else {
-                        this.responses.push(
-                            {
-                                question : "Ca ne fait rien",
-                                user : 'server'
-                            }
-                        );
-                    }
-                }
-                //push the question
-                else {
+    sendMessage(){
+        if(this.question.length >= 2 ){
+            //initial step
+            if(this.step == 0) {
+                if(this.userInput){
+                    this.$store.commit('SET_USERNAME', this.question);
+                    this.userName = this.$store.state.userName;
                     this.responses.push(
                         {
-                            question : this.question,
-                            user : 'client'
+                            question : "Enchanté de vous connaitre "+this.$store.state.userName+" ",
+                            user : 'server'
                         }
                     );
-                    // split question
-                    let splitQuestion = this.question.toLowerCase().split(' ');
-                    const questions = this.questions;
-                    setTimeout(()=> {
-                        for( const element of questions){
-                            if(splitQuestion.includes(element.question.toLowerCase())){
-                                this.errorAnswer = false;
-                                    this.responses.push(
-                                        {
-                                            question : element.response,
-                                            user : element.user,
-                                        }
-                                    )
-                                
-                                this.question = "";
-                                this.autoScroll();
-                                break;  
-                                
-                            }else {
-                    
-                                this.errorAnswer = true;
-                                this.autoScroll();       
-                            }    
-                              
-                        }
-                    }, 1000);  
-                }
-               
-                //Update step
-                if(this.step < 1){
-                    this.$store.commit('AUTO_UPDATE_STEP');
-                    this.step = this.$store.state.step;
-                }
-                
-                setTimeout(()=> {
+                    this.question = "";
+                    this.textHolder = "";
+                    this.userInput = false;
+                }else {
                     this.responses.push(
                         {
-                            question : this.autoBot[this.step].text,
-                            choices : this.autoBot[this.step].choices,
-                            user : 'server',
-                            validation : this.autoBot[this.step].validation 
+                            question : "Ca ne fait rien",
+                            user : 'server'
                         }
-                    )
-                }, 1500);
-                //autosroll
-                this.autoScroll();
+                    );
+                    this.textHolder = "";
+                }
             }
-      },
+            //push the question
+            else {
+                this.responses.push(
+                    {
+                        question : this.question,
+                        user : 'client'
+                    }
+                );
+                // split question
+                let splitQuestion = this.question.toLowerCase().split(' ');
+                const questions = this.questions;
+                setTimeout(()=> {
+                    for( const element of questions){
+                        if(splitQuestion.includes(element.question.toLowerCase())){
+                            this.errorAnswer = false;
+                                this.responses.push(
+                                    {
+                                        question : element.response,
+                                        user : element.user,
+                                    }
+                                )
+                            
+                            this.question = "";
+                            this.autoScroll();
+                            break;  
+                            
+                        }else {
+                
+                            this.errorAnswer = true;
+                            this.autoScroll();       
+                        }    
+                            
+                    }
+                }, 1000);  
+            }
+            
+            //Update step
+            if(this.step < 1){
+                this.$store.commit('AUTO_UPDATE_STEP');
+                this.step = this.$store.state.step;
+            }
+            
+            setTimeout(()=> {
+                this.responses.push(
+                    {
+                        question : this.autoBot[this.step].text,
+                        choices : this.autoBot[this.step].choices,
+                        user : 'server',
+                        validation : this.autoBot[this.step].validation 
+                    }
+                )
+            }, 2000);
+            //autosroll
+            this.autoScroll();
+        }
+    },
       //autoScroll
     autoScroll(){
         this.$nextTick(()=> {
                 this.$refs.chatBox.scrollTop = this.$refs.chatBox.scrollHeight;
             }) ;
-    },
-            
+    },      
     //Question selected with button validation
     //If true open User Input
     handleValidation(boolean){
@@ -208,8 +209,14 @@ export default {
         }
     },
     handleChoice(id){
+        //Questions
         if(id == 7) {
             this.handleValidation(true);
+            return;
+        }
+        //Meteo call
+        if(id == 8) {
+            this.callMeteo();
             return;
         }
         let timer = 5000;
@@ -263,22 +270,67 @@ export default {
             }, 7500)
         }
         
-        //Show choices again
-        setTimeout(()=> {
-            this.responses.push(
-                    {
-                        question : this.autoBot[1].text,
-                        choices : this.autoBot[1].choices,
-                        user : 'server',
-                        validation : this.autoBot[1].validation 
-                    }
-                )
-                //autosroll
-            this.autoScroll();
-        }, timer);
+            //Show choices again
+            setTimeout(()=> {
+                this.responses.push(
+                        {
+                            question : this.autoBot[1].text,
+                            choices : this.autoBot[1].choices,
+                            user : 'server',
+                            validation : this.autoBot[1].validation 
+                        }
+                    )
+                    //autosroll
+                this.autoScroll();
+            }, timer);
+    },
+    async callMeteo(){
+        //Get user Ip
+        const ip = await fetch('https://geo.ipify.org/api/v1?apiKey=at_TeJgRnmL1ADd8biyNxDbNZGt9KiIS&')
+                    .then(resultat => resultat.json())
+                    .then(json => json.ip);
+
+        //Get city with user ip
+        const city = await fetch('https://freegeoip.app/json/' + ip)
+                    .then(res => res.json())
+                    .then(json => json.city);
+
+        //Get region with user ip if !city data
+        const region = await fetch('https://freegeoip.app/json/' + ip)
+        .then(res => res.json())
+        .then(json => json.region_name);
+
+        let requestCity = region;
+        if(city) {
+            requestCity = city;
+        }
+
+        //Get Weather info
+        const meteo = await fetch("https://api.openweathermap.org/data/2.5/weather?q="+requestCity+"&appid=b3e0381a5b14fed6a476c05c735c45f1&lang=fr&units=metric") 
+                            .then(res => res.json())
+                            .then(json => json)
+
+        if(meteo) {
+            const name = meteo.name;
+            const temperature = meteo.main.temp;
+            const description = meteo.weather[0].description;
         
+            let response = "Il fait actuellement "+ Math.round(temperature)+"° à " + name + " avec " + description 
+            this.responses.push(
+                            {
+                                question : response ,
+                                user : 'server'
+                            }
+                        );
+                //autosroll
+                this.autoScroll();
+        }else {
+            this.errorAnswer = true;
+        }
+
+    
     }
-     
+ 
   }
 }
 </script>
@@ -310,12 +362,17 @@ export default {
         }
     }
     .modal-content {
-        height: 60vh;
+        height: 70vh;
         padding: 10px;
         background: #000;
         color: #fff;
         overflow-y: scroll;
         z-index: 3;
+        button {
+            color: #fff;
+            font-size: 0.95 em;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+        }
     }
     
     .modal-header, .modal-footer {
@@ -385,13 +442,11 @@ export default {
         .choice {
             background: red;
             margin: 5px;
-            
             border-radius: 3px;
         }
         button {
             padding: 10px;
             width: 100%;
-
             height: 100%;
             
         }
@@ -400,6 +455,7 @@ export default {
             margin: 5px 0;
             border-radius: 3px;
             &:first-child{
+                color: #fff;
                 background: grey;
             }
         }  

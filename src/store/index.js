@@ -14,18 +14,43 @@ export default new Vuex.Store({
         user: "server"
       },
       {
-        question: "comment tu va?",
-        response: "Je vais bien merci",
-        user: "server"
-      },
-      {
         question: "allez",
         response: "Je vais bien merci",
         user: "server"
       },
       {
+        question: "age",
+        response: "Hery a 36 ans",
+        user: "server"
+      },
+      {
+        question: "âge",
+        response: "Hery a 36 ans",
+        user: "server"
+      },
+      {
         question: "blague",
         response: "Je ne suis pas très drôle mais Hery pourra vous en raconter",
+        user: "server"
+      },
+      {
+        question: "nationalité",
+        response: "Hery est Français, moi je suis de la Silicon Valley",
+        user: "server"
+      },
+      {
+        question: "nom",
+        response: "Il s'appel Hery Ravelojaona, moi je m'appelle IRI",
+        user: "server"
+      },
+      {
+        question: "prénom",
+        response: "Son prénom c'est Hery",
+        user: "server"
+      },
+      {
+        question: "poste",
+        response: "Il cherche actuellement un poste de développeur orienté front-end, mais est ouvert à d'autres propositions",
         user: "server"
       }
     ],
@@ -36,7 +61,7 @@ export default new Vuex.Store({
         choices: false
       },
       {
-        text: "Que souhaitez savoir sur lui ?",
+        text: "Que souhaitez-vous savoir ?",
         choices: true,
         validation: false
       }
@@ -67,17 +92,23 @@ export default new Vuex.Store({
           id: 7,
           type: "question",
           validation: true
+        },
+        {
+          text: "La météo peut-être ?",
+          id: 8,
+          type: "question",
+          validation: true
         }
     ],
     choiceResponses : [
       {
-        text: `Hery Ravelojaona ( oui je sais, son nom est compliqué à prononcé mais vous allez vous y habitué) 36 ans, habites en région parisienne dans le département de la Seine et Marne. En 2019 il a décidé de faire une reconversion professionnelle afin devenir développeur web. Avec une formation qui demandait de l'autonomie et beaucoup de détermination il a réussi à obtenir son dîplome. Il est devenu passionné par le 
+        text: `Hery Ravelojaona ( oui je sais, son nom est compliqué à prononcé mais vous allez vous y habituer) 36 ans, habite en région parisienne dans le département de la Seine-et-Marne. En 2019 il décide d'effectuer une reconversion professionnelle afin devenir développeur web. Avec une formation qui demandait de l'autonomie et beaucoup de détermination il a réussi à obtenir son dîplôme. Il est devenu passionné par le 
         développement et convaincu qu'il souhaitai en faire son métier. Pour en savoir plus n'hésitez pas à le contacter il échangera avec vous avec plaisir.`,
         validation: false
       },
       {
         text: `
-        Avec une préference pour la partie développement front-end, il reste ouvert à tout autre apprentissage.`,
+        Avec une préférence pour la partie développement front-end, il reste ouvert à tout autre apprentissage.`,
         validation: false
       },
       {
@@ -97,7 +128,7 @@ export default new Vuex.Store({
         validation: false
       },
       {
-        text: `Entrepreneuriat / Esprit d'équipe / Communication / Organisation / Compréhension du besoin client / Proactif / Curieux / Sérieux / Polyvalent / A l'écoute `,
+        text: `Entrepreneuriat / Esprit d'équipe / Communication / Organisation / Compréhension du besoin client / Proactif / Curieux / Sérieux / Polyvalent / À l'écoute `,
         validation: false
       }
       
