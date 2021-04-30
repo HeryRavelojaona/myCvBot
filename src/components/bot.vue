@@ -28,9 +28,9 @@
                             </div>
                         </span>
                     </p>
+                    <div class="loader" v-if="isLoaded"><div></div><div></div><div></div><div></div></div>
                     <p class="server" 
                         v-if="errorAnswer">
-
                             Désolé <span v-if="userName">{{ userName }}</span> je n'ai pas la réponse, n'hésitez pas à le contacter
                         <span class="contact">
                             <a href="mailto:contact@heryravelojaona.fr"><img src="../assets/mail.svg.png" alt="email"> </a>
@@ -74,7 +74,8 @@ export default {
           textHolder: '',
           error: null,
           choiceResponses: null,
-          userName: null
+          userName: null,
+          isLoaded: false
       }
   },
   computed:{
@@ -104,6 +105,7 @@ export default {
   },
   methods: {
     sendMessage(){
+        this.isLoaded = true;
         if(this.question.length >= 2 ){
             //initial step
             if(this.step == 0) {
@@ -162,9 +164,10 @@ export default {
                         }    
                             
                     }
-                }, 1000);  
+                }, 1000); 
+
             }
-            
+            this.isLoaded = false; 
             //Update step
             if(this.step < 1){
                 this.$store.commit('AUTO_UPDATE_STEP');
@@ -285,6 +288,7 @@ export default {
             }, timer);
     },
     async callMeteo(){
+        this.isLoaded = true; 
         //Get user Ip
         const ip = await fetch('https://geo.ipify.org/api/v1?apiKey=at_TeJgRnmL1ADd8biyNxDbNZGt9KiIS&')
                     .then(resultat => resultat.json())
@@ -327,6 +331,7 @@ export default {
         }else {
             this.errorAnswer = true;
         }
+        this.isLoaded = false; 
 
     
     }
@@ -338,7 +343,7 @@ export default {
 <style lang="scss" scoped>
 #bot {
     width: 300px;
-    height: auto;
+    height: 100vh;
     position: absolute;
     left: 50%;
     top: 50%;
@@ -362,15 +367,57 @@ export default {
         }
     }
     .modal-content {
-        height: 70vh;
+
+        height: 60vh;
         padding: 10px;
         background: #000;
         color: #fff;
         overflow-y: scroll;
         z-index: 3;
+        .loader {
+            /*position: absolute;
+            z-index: 99;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;*/
+            display: inline-block;
+            position: relative;
+            width: 80px;
+            height: 80px;
+            div {
+                box-sizing: border-box;
+                display: block;
+                position: absolute;
+                width: 64px;
+                height: 64px;
+                margin: 8px;
+                border: 8px solid #fff;
+                border-radius: 50%;
+                animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+                border-color: #fff transparent transparent transparent;
+            }
+            div:nth-child(1) {
+                animation-delay: -0.45s;
+            }
+            div:nth-child(2) {
+                animation-delay: -0.3s;
+            }
+            div:nth-child(3) {
+                animation-delay: -0.15s;
+            }
+            @keyframes lds-ring {
+                0% {
+                    transform: rotate(0deg);
+                }
+                100% {
+                    transform: rotate(360deg);
+                }
+            }
+        }
         button {
             color: #fff;
-            font-size: 0.95 em;
+            font-size: 1em;
             font-family: Verdana, Geneva, Tahoma, sans-serif;
         }
     }
@@ -383,6 +430,9 @@ export default {
     }
 
     .modal-footer {
+        form {
+            width: 100%;
+        }
         display: flex;
         flex-direction: column;
         border-top: 12px solid #000;
@@ -390,10 +440,14 @@ export default {
         input {
             border: 1px solid;
             height: 30px;
-            width: 80%;
+            width: 85%;
+        }
+        .send {
+            display: flex;
+            flex-direction: row;
         }
         img {
-            width: 30px;
+            width: 25px;
         }
         .error{
             margin-top: 7px;
@@ -460,9 +514,11 @@ export default {
             }
         }  
     }
+    
   
 
 }
+
 </style> scoped>
 
 </style>
