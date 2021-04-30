@@ -30,6 +30,7 @@
                     </p>
                     <p class="server" 
                         v-if="errorAnswer">
+
                             Désolé <span v-if="userName">{{ userName }}</span> je n'ai pas la réponse, n'hésitez pas à me contacter
                         <span class="contact">
                             <a href="mailto:contact@heryravelojaona.fr"><img src="../assets/mail.svg.png" alt="email"> </a>
@@ -136,11 +137,11 @@ export default {
                     );
                     // split question
                     let splitQuestion = this.question.toLowerCase().split(' ');
-                    
-                        this.questions.forEach(element => {
+                    const questions = this.questions;
+                    setTimeout(()=> {
+                        for( const element of questions){
                             if(splitQuestion.includes(element.question.toLowerCase())){
-                        setTimeout(()=>{
-                            this.errorAnswer = false;
+                                this.errorAnswer = false;
                                     this.responses.push(
                                         {
                                             question : element.response,
@@ -150,16 +151,16 @@ export default {
                                 
                                 this.question = "";
                                 this.autoScroll();
-                        
-                        }, 800);
+                                break;  
+                                
                             }else {
                     
                                 this.errorAnswer = true;
                                 this.autoScroll();       
                             }    
-                   
-                        });
-                    
+                              
+                        }
+                    }, 1000);  
                 }
                
                 //Update step

@@ -14,6 +14,11 @@ export default new Vuex.Store({
         user: "server"
       },
       {
+        question: "comment tu va?",
+        response: "Je vais bien merci",
+        user: "server"
+      },
+      {
         question: "allez",
         response: "Je vais bien merci",
         user: "server"
@@ -58,7 +63,7 @@ export default new Vuex.Store({
           type: "question"
         },
         {
-          text: "Autre question",
+          text: "Autres questions",
           id: 7,
           type: "question",
           validation: true
