@@ -49,6 +49,21 @@ export default new Vuex.Store({
         user: "server"
       },
       {
+        question: "contrat",
+        response: "Hery est actuellement à la recherche d'un contrat en CDI",
+        user: "server"
+      },
+      {
+        question: "salariales",
+        response: "Entre 25 et 32k",
+        user: "server"
+      },
+      {
+        question: "salariale",
+        response: "Entre 25 et 32k",
+        user: "server"
+      },
+      {
         question: "poste",
         response: "Il cherche actuellement un poste de développeur orienté front-end, mais est ouvert à d'autres propositions",
         user: "server"
@@ -56,7 +71,7 @@ export default new Vuex.Store({
     ],
     autoBot: [
       {
-        text: "Bonjour, je suis IRI l'assistant d'Hery. J'espère que vous allez bien. Puis-je connaitre votre prénom ?",
+        text: "Bonjour, je suis HRBot l'assistant d'Hery. J'espère que vous allez bien. Puis-je connaitre votre prénom ?",
         validation: true,
         choices: false
       },
@@ -64,6 +79,11 @@ export default new Vuex.Store({
         text: "Que souhaitez-vous savoir ?",
         choices: true,
         validation: false
+      },
+      {
+        text: "Autre chose ?",
+        choices: false,
+        validation: true
       }
     ],
     choices: [
@@ -78,12 +98,12 @@ export default new Vuex.Store({
           type: "question"
         },
         {
-          text: "Connaissances complémentaires",
+          text: "Ses connaissances complémentaires",
           id: 5,
           type: "question"
         },
         {
-          text: "Qualités",
+          text: "Ses qualités",
           id: 6,
           type: "question"
         },

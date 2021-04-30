@@ -21,6 +21,7 @@
                                  <button v-if="choice.type == 'question'"  @click.prevent="handleChoice(choice.id)" >{{ choice.text }}</button>
                             </div>
                         </span>
+
                         <span class="btn-choice" v-else-if="response.validation">
                             <div>
                                  <button class="validation" @click="handleValidation(true)">Oui</button>
@@ -28,7 +29,9 @@
                             </div>
                         </span>
                     </p>
+                    <!--Loader-->
                     <div class="loader" v-if="isLoaded"><div></div><div></div><div></div><div></div></div>
+                    
                     <p class="server" 
                         v-if="errorAnswer">
                             Désolé <span v-if="userName">{{ userName }}</span> je n'ai pas la réponse, n'hésitez pas à le contacter
@@ -106,7 +109,7 @@ export default {
   methods: {
     sendMessage(){
         this.isLoaded = true;
-        if(this.question.length >= 2 ){
+     
             //initial step
             if(this.step == 0) {
                 if(this.userInput){
@@ -133,60 +136,68 @@ export default {
             }
             //push the question
             else {
-                this.responses.push(
-                    {
-                        question : this.question,
-                        user : 'client'
-                    }
-                );
-                // split question
-                let splitQuestion = this.question.toLowerCase().split(' ');
-                const questions = this.questions;
-                setTimeout(()=> {
-                    for( const element of questions){
-                        if(splitQuestion.includes(element.question.toLowerCase())){
-                            this.errorAnswer = false;
-                                this.responses.push(
-                                    {
-                                        question : element.response,
-                                        user : element.user,
-                                    }
-                                )
-                            
-                            this.question = "";
-                            this.autoScroll();
-                            break;  
-                            
-                        }else {
-                
-                            this.errorAnswer = true;
-                            this.autoScroll();       
-                        }    
-                            
-                    }
-                }, 1000); 
+                if(this.question){
+                        this.responses.push(
+                        {
+                            question : this.question,
+                            user : 'client'
+                        }
+                    
+                    );
+                    // split question
+                    let splitQuestion = this.question.toLowerCase().split(' ');
+                    const questions = this.questions;
+                    setTimeout(()=> {
+                        for( const element of questions){
+                            if(splitQuestion.includes(element.question.toLowerCase())){
+                                this.errorAnswer = false;
+                                    this.responses.push(
+                                        {
+                                            question : element.response,
+                                            user : element.user,
+                                        }
+                                    )
+                                
+                                this.question = "";
+                                this.autoScroll();
+                                break;  
+                                
+                            }else {
+                    
+                                this.errorAnswer = true;
+                                this.autoScroll();       
+                            }    
+                                
+                        }
+                    }, 1000); 
+                }
 
             }
-            this.isLoaded = false; 
+            this.isLoaded = false;
+            this.autoScroll();  
             //Update step
             if(this.step < 1){
                 this.$store.commit('AUTO_UPDATE_STEP');
                 this.step = this.$store.state.step;
             }
             
-            setTimeout(()=> {
-                this.responses.push(
-                    {
-                        question : this.autoBot[this.step].text,
-                        choices : this.autoBot[this.step].choices,
-                        user : 'server',
-                        validation : this.autoBot[this.step].validation 
-                    }
-                )
-            }, 2000);
+            if(this.step == 1) {
+                setTimeout(()=> {
+                    this.responses.push(
+                        {
+                            question : this.autoBot[this.step].text,
+                            choices : this.autoBot[this.step].choices,
+                            user : 'server',
+                            validation : this.autoBot[this.step].validation 
+                        }
+                    )
+                     this.autoScroll(); 
+                }, 2000);
+            }
+    
             //autosroll
             this.autoScroll();
-        }
+     
     },
       //autoScroll
     autoScroll(){
@@ -197,19 +208,43 @@ export default {
     //Question selected with button validation
     //If true open User Input
     handleValidation(boolean){
-        if(boolean){
-            this.userInput = true;
-            if(this.step == 0){
-                this.textHolder = "Veuillez entrer votre prénom ici"
+        if(this.step == 0){
+            if(boolean){
+                this.userInput = true;
+                this.textHolder = "Veuillez entrer votre prénom ici" 
+            }else {
+                this.userInput = false;
+                this.question = "Ca ne fait rien"; 
+                //autosroll 
+                this.sendMessage();
+                this.autoScroll();
+                this.question = "";
             }
+            
         }else {
-            this.userInput = false;
-            this.question = "Ca ne fait rien";
-            //autosroll
-            this.autoScroll();
-            this.sendMessage();
-            this.question = "";
+            if(this.step == 1){
+                if(boolean){
+                    this.userInput = false;
+                    //autosroll 
+                    this.sendMessage();
+                    this.autoScroll();
+                    this.question = "";
+                }else {
+                    this.responses.push(
+                            {
+                                question : "N'hésitez pas à le contacter bonne journée",
+                                choices : false,
+                                user : 'server',
+                                validation : false 
+                            }
+                        )
+                        this.autoScroll(); 
+                }
+            
+            }
         }
+
+        
     },
     handleChoice(id){
         //Questions
@@ -222,7 +257,7 @@ export default {
             this.callMeteo();
             return;
         }
-        let timer = 5000;
+        let timer = 8000;
         setTimeout(()=> {
             this.responses.push(
                             {
@@ -277,12 +312,13 @@ export default {
             setTimeout(()=> {
                 this.responses.push(
                         {
-                            question : this.autoBot[1].text,
-                            choices : this.autoBot[1].choices,
+                            question : this.autoBot[2].text,
+                            choices : this.autoBot[2].choices,
                             user : 'server',
-                            validation : this.autoBot[1].validation 
+                            validation : this.autoBot[2].validation 
                         }
                     )
+                    this.errorAnswer = false;
                     //autosroll
                 this.autoScroll();
             }, timer);
@@ -343,6 +379,7 @@ export default {
 <style lang="scss" scoped>
 #bot {
     width: 300px;
+    max-width: 300px;
     height: 100vh;
     position: absolute;
     left: 50%;
@@ -367,7 +404,6 @@ export default {
         }
     }
     .modal-content {
-
         height: 60vh;
         padding: 10px;
         background: #000;
@@ -375,12 +411,6 @@ export default {
         overflow-y: scroll;
         z-index: 3;
         .loader {
-            /*position: absolute;
-            z-index: 99;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;*/
             display: inline-block;
             position: relative;
             width: 80px;
