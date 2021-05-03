@@ -19,6 +19,16 @@ export default new Vuex.Store({
         user: "server"
       },
       {
+        question: "habites",
+        response: "En île de France département de la Seine-et-marne (77)",
+        user: "server"
+      },
+      {
+        question: "habite",
+        response: "En île de France département de la Seine-et-marne (77)",
+        user: "server"
+      },
+      {
         question: "age",
         response: "Hery a 36 ans",
         user: "server"
@@ -30,7 +40,7 @@ export default new Vuex.Store({
       },
       {
         question: "blague",
-        response: "Je ne suis pas très drôle mais Hery pourra vous en raconter",
+        response: "Je ne suis pas très drôle, mais Hery pourra vous en raconter",
         user: "server"
       },
       {
@@ -50,12 +60,12 @@ export default new Vuex.Store({
       },
       {
         question: "nom",
-        response: "Il s'appel Hery Ravelojaona, moi je m'appelle IRI",
+        response: "Il s'appelle Hery Ravelojaona, moi je m'appelle Hrbot",
         user: "server"
       },
       {
         question: "prénom",
-        response: "Son prénom c'est Hery",
+        response: "Son prénom est Hery",
         user: "server"
       },
       {
@@ -98,7 +108,7 @@ export default new Vuex.Store({
     ],
     choices: [
         {
-          text: "Qui est-il ? (en bref)",
+          text: "Qui est-il ?",
           id: 0,
           type: "question"
         },

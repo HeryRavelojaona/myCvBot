@@ -120,10 +120,12 @@ export default {
                             user : 'server'
                         }
                     );
+                    this.isLoaded = false;
                     this.question = "";
                     this.textHolder = "";
                     this.userInput = false;
                 }else {
+
                     this.responses.push(
                         {
                             question : "Ca ne fait rien",
@@ -132,6 +134,7 @@ export default {
                     );
                     this.textHolder = "";
                 }
+                this.isLoaded = false;
             }
             //push the question
             else {
@@ -168,7 +171,7 @@ export default {
                                 this.errorAnswer = true;
                                 this.autoScroll();       
                             }    
-                                
+                        
                         }
                     }, 1000); 
                 }
@@ -186,6 +189,7 @@ export default {
             if(this.step == 1) {
                 this.isLoaded = true;
                 setTimeout(()=> {
+
                     this.responses.push(
                         {
                             question : this.autoBot[this.step].text,
@@ -196,7 +200,7 @@ export default {
                     )
                      this.autoScroll();
                      this.isLoaded = false; 
-                }, 4000);
+                }, 1000);
             }
     
             //autosroll
@@ -275,7 +279,7 @@ export default {
 
         //If id === 1 Multiple response
         if(id == 1) {
-            timer = 10000;
+            timer = 5000;
             setTimeout(()=> {
                 this.responses.push(
                             {
@@ -297,7 +301,8 @@ export default {
                         );
                 //autosroll
                 this.autoScroll();
-            }, 5500)
+            }, 5500);
+            
             setTimeout(()=> {
                 this.responses.push(
                             {
@@ -308,9 +313,9 @@ export default {
                         );
                 //autosroll
                 this.autoScroll();
-            }, 7500)
-        }
-        
+            }, 7500);
+
+            //Choice
             //Show choices again
             setTimeout(()=> {
                 this.responses.push(
@@ -325,6 +330,26 @@ export default {
                     //autosroll
                 this.autoScroll();
             }, timer);
+        }else {
+            //Show choices again
+            setTimeout(()=> {
+                timer = 2000;
+                this.responses.push(
+                        {
+                            question : this.autoBot[2].text,
+                            choices : this.autoBot[2].choices,
+                            user : 'server',
+                            validation : this.autoBot[2].validation 
+                        }
+                    )
+                    this.errorAnswer = false;
+                    //autosroll
+                this.autoScroll();
+            }, timer);
+
+        }
+        
+            
     },
     async callMeteo(){
         this.isLoaded = true; 
@@ -358,7 +383,7 @@ export default {
             const temperature = meteo.main.temp;
             const description = meteo.weather[0].description;
         
-            let response = "Il fait actuellement "+ Math.round(temperature)+"° à " + name + ", " + description 
+            let response = "Il fait actuellement "+ Math.round(temperature)+"°  , "  + description ;
             this.responses.push(
                             {
                                 question : response ,
@@ -371,8 +396,6 @@ export default {
             this.errorAnswer = true;
         }
         this.isLoaded = false; 
-
-    
     }
  
   }
@@ -382,7 +405,6 @@ export default {
 <style lang="scss" scoped>
 #bot {
     width: 300px;
-    max-width: 300px;
     height: 100vh;
     position: absolute;
     left: 50%;
@@ -395,6 +417,7 @@ export default {
             cursor: pointer;
     }
     #myModal {
+        max-width: 300px;
         border: 1px solid;
         border-radius: 3px;
         box-shadow: 2px 2px 2px 2px  #fff;
